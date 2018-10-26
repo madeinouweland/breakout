@@ -55,10 +55,6 @@ function keyPressed() {
   }
 }
 
-// function isEqual(stone1, stone2) {
-//   return stone1.row === stone2.row && stone1.col === stone2.col;
-// }
-
 function update() {
   game.ball.x += game.ball.direction[0];
   game.ball.y += game.ball.direction[1];
@@ -86,20 +82,21 @@ function update() {
     game.ball.direction[1] =- game.ball.direction[1];
   }
 
-  var stoneHit;
+  let stoneHit;
   game.stones.forEach(x => {
-    stoneHit = intersects(game.ball.x, game.ball.y, game.ball.radius, x.x, x.y, x.x + x.width, x.y + x.height)
-    if (stoneHit) {
+    hit = intersects(game.ball.x, game.ball.y, game.ball.radius, x.x, x.y, x.x + x.width, x.y + x.height)
+    if (hit) {
       game.stones = game.stones.filter(s => s !== x);
-    }
-    if (stoneHit) {
-      if (stoneHit[1] > stoneHit[0]) {
-        game.ball.direction[1] =- game.ball.direction[1];
-      } else {
-        game.ball.direction[0] =- game.ball.direction[0];
-      }
+      stoneHit = hit;
     }
   });
+  if (stoneHit) {
+    if (stoneHit[1] > stoneHit[0]) {
+      game.ball.direction[1] =- game.ball.direction[1];
+    } else {
+      game.ball.direction[0] =- game.ball.direction[0];
+    }
+  }
 }
 
 function hit() {
@@ -113,7 +110,7 @@ function draw() {
   drawBoundary();
   noStroke();
 
-  game["stones"].forEach(stone => {
+  game.stones.forEach(stone => {
     fill(stone.color);
     rect(stone.x, stone.y, stone.width, stone.height, 2);
   });
