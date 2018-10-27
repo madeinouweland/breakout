@@ -105,8 +105,12 @@ function draw() {
   update();
 
   background("#01155a");
-  drawBoundary();
   noStroke();
+
+  fill(200);
+  rect(0, 0, width, 10);
+  rect(0, 0, 10, height);
+  rect(width - 10, 0, width, height);
 
   game.stones.forEach(stone => {
     fill(stone.color);
@@ -123,14 +127,5 @@ function draw() {
 
   fill(255)
   ellipse(game.ball.x, game.ball.y, game.ball.radius * 2, game.ball.radius * 2);
-
   rect(game.hero.x, game.hero.y, game.hero.width, game.hero.height, 20);
-}
-
-function drawBoundary() {
-  stroke("#eee");
-  strokeWeight(20);
-  line(0, height, 0, 0);
-  line(0, 0, width, 0);
-  line(width, 0, width, height);
 }
