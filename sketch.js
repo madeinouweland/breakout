@@ -32,6 +32,11 @@ function setup() {
       width: heroWidth,
       height: heroHeight,
     },
+    boundary: [{
+      x1: 0, y1: 50, x2: width, y2: 10}, {
+      x1: 0, y1: 50, x2: 10, y2: height}, {
+      x1: width - 10, y1: 50, x2: width, y2: height,
+    }],
     stones: [],
     explosions: [],
     score: 0,
@@ -120,9 +125,9 @@ function draw() {
   noStroke();
 
   fill(200);
-  rect(0, 50, width, 10);
-  rect(0, 50, 10, height);
-  rect(width - 10, 50, width, height);
+  game.boundary.forEach(b => {
+    rect(b.x1, b.y1, b.x2, b.y2);
+  });
 
   game.stones.forEach(stone => {
     fill(stone.color);
