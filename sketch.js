@@ -1,9 +1,18 @@
 let game;
 let stoneColors = ["#9d9d9d", "#ae2317", "#e0df49", "#67809d", "#b24b9e", "#86dc43"];
 let boundaryWidth = 10;
+let font;
+
+function preload() {
+  font = loadFont('arcade.ttf');
+}
 
 function setup() {
   createCanvas(798, 600);
+
+  textFont(font);
+  textSize(36);
+
   ballRadius = 10;
   heroWidth = 150;
   heroHeight = 15;
@@ -25,13 +34,15 @@ function setup() {
     },
     stones: [],
     explosions: [],
+    score: 0,
+    lives: 5,
   }
 
   for (var col = 0; col < 9; col++) {
     for (var row = 0; row < 6; row++) {
       game.stones.push({
         x: col * stoneWidth + (col + 1) * stoneMargin + boundaryWidth,
-        y: row * stoneHeight + (row + 1) * stoneMargin + boundaryWidth,
+        y: row * stoneHeight + (row + 1) * stoneMargin + 60,
         width: stoneWidth,
         height: stoneHeight,
         color: stoneColors[row]});
@@ -86,6 +97,7 @@ function update() {
     if (hit) {
       game.stones = game.stones.filter(s => s !== x);
       stoneHit = hit;
+      game.score++;
       game.explosions.push(new Explosion(x));
     }
   });
@@ -108,9 +120,9 @@ function draw() {
   noStroke();
 
   fill(200);
-  rect(0, 0, width, 10);
-  rect(0, 0, 10, height);
-  rect(width - 10, 0, width, height);
+  rect(0, 50, width, 10);
+  rect(0, 50, 10, height);
+  rect(width - 10, 50, width, height);
 
   game.stones.forEach(stone => {
     fill(stone.color);
@@ -128,4 +140,9 @@ function draw() {
   fill(255)
   ellipse(game.ball.x, game.ball.y, game.ball.radius * 2, game.ball.radius * 2);
   rect(game.hero.x, game.hero.y, game.hero.width, game.hero.height, 20);
+
+  fill('#ae2317');
+  text(`SCORE: ${game.score}`, 10, 37);
+  fill('#67809d');
+  text(`LIVES: ${game.lives}`, 440, 37);
 }
