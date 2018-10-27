@@ -16,9 +16,6 @@ function setup() {
       y: height - 90,
       radius: ballRadius,
       direction: [8, -8],
-      onHit : () => {
-
-      }
     },
     hero: {
       x: width / 2 - heroWidth / 2,
@@ -26,7 +23,8 @@ function setup() {
       width: heroWidth,
       height: heroHeight,
     },
-    stones: []
+    stones: [],
+    explosions: [],
   }
 
   for (var col = 0; col < 9; col++) {
@@ -88,8 +86,10 @@ function update() {
     if (hit) {
       game.stones = game.stones.filter(s => s !== x);
       stoneHit = hit;
+      game.explosions.push(new Explosion(x));
     }
   });
+
   if (stoneHit) {
     if (stoneHit[1] > stoneHit[0]) {
       game.ball.direction[1] =- game.ball.direction[1];
@@ -97,10 +97,8 @@ function update() {
       game.ball.direction[0] =- game.ball.direction[0];
     }
   }
-}
 
-function hit() {
-
+  game.explosions = game.explosions.filter(s => s.lifeTime > 0);
 }
 
 function draw() {
@@ -113,6 +111,14 @@ function draw() {
   game.stones.forEach(stone => {
     fill(stone.color);
     rect(stone.x, stone.y, stone.width, stone.height, 2);
+  });
+
+  game.explosions.forEach(explosion => {
+    explosion.update();
+    explosion.fragments.forEach(f => {
+      fill(f.color);
+      rect(f.x, f.y, f.width, f.height, 2);
+    })
   });
 
   fill(255)
