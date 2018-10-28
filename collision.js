@@ -1,37 +1,59 @@
-// intersect solution found at: https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection#402010
-function intersects(cx, cy, radius, left, top, right, bottom) {
+// inspiration for intersect solution found at: https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection#402010
+function collides(ball, gameObject) {
   var closestX;
   var closestY;
-  var impact = [0,0];
+  var left = gameObject.x;
+  var right = gameObject.x + gameObject.width;
+  var top = gameObject.y;
+  var bottom = gameObject.y + gameObject.height;
 
-  if (cx < left) {
+  if (ball.x < left) {
     closestX = left;
-    impact[0] = left - cx;
-  } else if (cx > right) {
+  } else if (ball.x > right) {
     closestX = right;
-    impact[0] = cx - right;
   } else {
-    closestX = cx;
+    closestX = ball.x;
   }
 
-  if (cy < top) {
+  if (ball.y < top) {
     closestY = top;
-    impact[1] = top - cy;
-  } else if (cy > bottom) {
+  } else if (ball.y > bottom) {
     closestY = bottom;
-    impact[1] = cy - bottom;
   } else {
-    closestY = cy;
+    closestY = ball.y;
   }
 
-  var xDistanceToClosestSide = closestX - cx;
-  var yDistanceToClosestSide = closestY - cy;
+  var xDistanceToClosestSide = closestX - ball.x;
+  var yDistanceToClosestSide = closestY - ball.y;
 
-  isHit = (xDistanceToClosestSide * xDistanceToClosestSide +
-    yDistanceToClosestSide * yDistanceToClosestSide) <= radius * radius;
+  return (xDistanceToClosestSide * xDistanceToClosestSide +
+    yDistanceToClosestSide * yDistanceToClosestSide) <= ball.radius * ball.radius;
+}
 
-  if (isHit) {
-    return impact;
+function getImpact(ball, gameObject) {
+  var closestX;
+  var closestY;
+  var left = gameObject.x;
+  var right = gameObject.x + gameObject.width;
+  var top = gameObject.y;
+  var bottom = gameObject.y + gameObject.height;
+  var impact = {x: 0, y: 0};
+
+  if (ball.x < left) {
+    impact.x = left - ball.x;
   }
-  return null;
+
+  if (ball.x > right) {
+    impact.x = ball.x - right;
+  }
+
+  if (ball.y < top) {
+    impact.y = top - ball.y;
+  }
+
+  if (ball.y > bottom) {
+    impact.y = ball.y - bottom;
+  }
+
+  return impact;
 }

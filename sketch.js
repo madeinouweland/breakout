@@ -1,6 +1,4 @@
 let game;
-let stoneColors = ["#9d9d9d", "#ae2317", "#e0df49", "#67809d", "#b24b9e", "#86dc43"];
-let boundaryWidth = 10;
 let font;
 
 function preload() {
@@ -13,12 +11,14 @@ function setup() {
   textFont(font);
   textSize(36);
 
+  boundaryWidth = 10;
   ballRadius = 10;
   heroWidth = 150;
   heroHeight = 15;
   stoneWidth = 82;
   stoneHeight = 30;
   stoneMargin = 4;
+  stoneColors = ["#9d9d9d", "#ae2317", "#e0df49", "#67809d", "#b24b9e", "#86dc43"];
   game = {
     ball: {
       x: width / 2,
@@ -33,9 +33,9 @@ function setup() {
       height: heroHeight,
     },
     boundary: [{
-      x1: 0, y1: 50, x2: width, y2: 10}, {
-      x1: 0, y1: 50, x2: 10, y2: height}, {
-      x1: width - 10, y1: 50, x2: width, y2: height,
+      x: 0, y: 50, width: width, height: 10}, { // top
+      x: 0, y: 50, width: 10, height: height - 50}, { // left
+      x: width - 10, y: 50, width: 10, height: height - 50, // right
     }],
     stones: [],
     explosions: [],
@@ -83,32 +83,32 @@ function update() {
     game.hero.x = width - boundaryWidth - game.hero.width;
   }
 
-  if (game.ball.y < game.ball.radius + 10) {
-    game.ball.direction[1] =- game.ball.direction[1];
-  }
-
-  if (game.ball.x < game.ball.radius + 10 || game.ball.x > width - 10 - game.ball.radius) {
-    game.ball.direction[0] =- game.ball.direction[0];
-  }
-
-  heroHit = intersects(game.ball.x, game.ball.y, game.ball.radius, game.hero.x, game.hero.y, game.hero.x + game.hero.width, game.hero.y + game.hero.height)
+  heroHit = collides(game.ball, game.hero)
   if (heroHit) {
     game.ball.direction[1] =- game.ball.direction[1];
   }
 
-  let stoneHit;
-  game.stones.forEach(x => {
-    hit = intersects(game.ball.x, game.ball.y, game.ball.radius, x.x, x.y, x.x + x.width, x.y + x.height)
-    if (hit) {
-      game.stones = game.stones.filter(s => s !== x);
-      stoneHit = hit;
-      game.score++;
-      game.explosions.push(new Explosion(x));
+  var boundaryHits = game.boundary.filter(boundary => collides(game.ball, boundary))
+  if (boundaryHits.length > 0) {
+    impact = getImpact(game.ball, boundaryHits[0]);
+    if (impact.x < impact.y) {
+      game.ball.direction[1] =- game.ball.direction[1];
+    } else {
+      game.ball.direction[0] =- game.ball.direction[0];
     }
-  });
+  }
 
-  if (stoneHit) {
-    if (stoneHit[1] > stoneHit[0]) {
+  var stoneHits = game.stones.filter(stone => collides(game.ball, stone))
+  if (stoneHits.length > 0) {
+    console.log(game.ball, stoneHits);
+    stoneHits.forEach(h => {
+      game.score++;
+      game.explosions.push(new Explosion(h));
+      game.stones = game.stones.filter(s => s !== h);
+    });
+
+    impact = getImpact(game.ball, stoneHits[0]);
+    if (impact.x < impact.y) {
       game.ball.direction[1] =- game.ball.direction[1];
     } else {
       game.ball.direction[0] =- game.ball.direction[0];
@@ -125,9 +125,7 @@ function draw() {
   noStroke();
 
   fill(200);
-  game.boundary.forEach(b => {
-    rect(b.x1, b.y1, b.x2, b.y2);
-  });
+  game.boundary.forEach(b => rect(b.x, b.y, b.width, b.height));
 
   game.stones.forEach(stone => {
     fill(stone.color);
