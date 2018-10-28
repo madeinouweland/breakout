@@ -1,6 +1,7 @@
 let game;
 let font;
 let boundaryWidth = 10;
+let playerIsComputer = true;
 
 function preload() {
   font = loadFont('arcade.ttf');
@@ -39,7 +40,7 @@ function newGame(lives, score) {
   }
 
   for (var col = 0; col < 9; col++) {
-    for (var row = 0; row < 1; row++) {
+    for (var row = 0; row < 6; row++) {
       game.stones.push({
         x: col * stoneWidth + (col + 1) * stoneMargin + boundaryWidth,
         y: row * stoneHeight + (row + 1) * stoneMargin + 60,
@@ -75,7 +76,16 @@ function update() {
   game.ball.x += game.ball.direction[0];
   game.ball.y += game.ball.direction[1];
 
-  game.hero.x = game.ball.x - game.hero.width / 2;
+  if (playerIsComputer) {
+    game.hero.x = game.ball.x - game.hero.width / 2;
+  } else {
+    if (keyIsDown(LEFT_ARROW)) {
+      game.hero.x -= 18;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      game.hero.x += 18;
+    }
+  }
 
   if (game.hero.x < boundaryWidth) {
     game.hero.x = boundaryWidth;
