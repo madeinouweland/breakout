@@ -1,24 +1,19 @@
 let game;
 let font;
+let boundaryWidth = 10;
 
 function preload() {
   font = loadFont('arcade.ttf');
 }
 
-function setup() {
-  createCanvas(798, 600);
-
-  textFont(font);
-  textSize(36);
-
-  boundaryWidth = 10;
-  ballRadius = 10;
-  heroWidth = 150;
-  heroHeight = 15;
-  stoneWidth = 82;
-  stoneHeight = 30;
-  stoneMargin = 4;
-  stoneColors = ["#9d9d9d", "#ae2317", "#e0df49", "#67809d", "#b24b9e", "#86dc43"];
+function newGame(lives, score) {
+  var ballRadius = 10;
+  var heroWidth = 150;
+  var heroHeight = 15;
+  var stoneWidth = 82;
+  var stoneHeight = 30;
+  var stoneMargin = 4;
+  var stoneColors = ["#9d9d9d", "#ae2317", "#e0df49", "#67809d", "#b24b9e", "#86dc43"];
   game = {
     ball: {
       x: width / 2,
@@ -39,12 +34,12 @@ function setup() {
     }],
     stones: [],
     explosions: [],
-    score: 0,
-    lives: 5,
+    score: score,
+    lives: lives,
   }
 
   for (var col = 0; col < 9; col++) {
-    for (var row = 0; row < 6; row++) {
+    for (var row = 0; row < 1; row++) {
       game.stones.push({
         x: col * stoneWidth + (col + 1) * stoneMargin + boundaryWidth,
         y: row * stoneHeight + (row + 1) * stoneMargin + 60,
@@ -53,6 +48,13 @@ function setup() {
         color: stoneColors[row]});
     }
   }
+}
+
+function setup() {
+  createCanvas(798, 600);
+  textFont(font);
+  textSize(36);
+  newGame(5, 0);
 }
 
 let isRunning = true;
@@ -116,6 +118,10 @@ function update() {
   }
 
   game.explosions = game.explosions.filter(s => s.lifeTime > 0);
+
+  if (game.stones.length === 0) {
+    newGame(game.lives, game.score);
+  }
 }
 
 function draw() {
